@@ -1,12 +1,14 @@
 <template>
   <div>
     <my-metric></my-metric>
+    <!-- <my-test></my-test> -->
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MyMetric from '@/components/MyMetric.vue'
+
 
 export default defineComponent({
   name: 'App',
