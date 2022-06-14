@@ -1,26 +1,29 @@
 <template>
-    <div>
+<div></div>
+    <div class="main">
         <h2>Статистика состояний объектов мониторинга</h2>
         <div class="percents"> 
             <ul>
-                <li>Всего: {{get100Procent()}}</li>
+                <li>Всего: {{list.length}}</li>
                  <div class="row">
                     <li  v-for="e in metric()" :key="e">
-                        <span :class="e.state"></span>
-                        {{e.state}} {{e.count }}
+                        <span :class="e.name"></span>
+                        {{e.name}} {{e.value }}
                     </li>
                 </div>
             </ul>
         </div>
         <div class="chart">
-                    <my-test :metric="procents()"></my-test>
+            <my-chart :options="metric()"></my-chart>
+                    <!-- <my-test :metric="procents()"></my-test> -->
             </div>
     </div>
 </template>
 <script setup lang="ts">
 import {a} from '@/ListObject'
 import { computed } from 'vue'
-import MyTest from '@/components/MyTest.vue'
+import MyChart from '@/components/MyChart.vue'
+
     const listJSON = JSON.stringify(a)
     const allStatuses = new Set(JSON.parse(listJSON).map(data => (data.status)))
     // здесь хранится массив статусов для дальнешего подсчета записей  
@@ -30,8 +33,9 @@ import MyTest from '@/components/MyTest.vue'
         let result = []
         allStatuses.forEach(state =>{
             let s = list.filter(e => e.status === state)
-
-            result.push({"state" : state, "count": s.length })
+            // console.log("S=" +JSON.stringify(s))
+           
+            result.push({"name" : state, "value": s.length, "itemStyle": {"color": getColor(state)} })
         })
         return result
     }
@@ -44,18 +48,19 @@ import MyTest from '@/components/MyTest.vue'
     }
     // const getProcent = (e) => ((get100Procent()/100) * e.count).toFixed(1)
     // получаем массив с содержащий цвета и процент 
-    const procents = () => {
-        let procent = []
-        metric().forEach((e) =>{
-            let data = {}
-                data.status = e.state,
-                data.color = getColor(e.state)
-                data.procent = ((e.count/get100Procent()) * 100).toFixed(1) 
-            procent.push(data)
-        })
-        return procent
-    }
+    // const procents = () => {
+    //     let procent = []
+    //     metric().forEach((e) =>{
+    //         let data = {}
+    //             data.status = e.state,
+    //             data.color = getColor(e.state)
+    //             data.procent = ((e.count/get100Procent()) * 100).toFixed(1) 
+    //         procent.push(data)
+    //     })
+    //     return procent
+    // }
   const getColor =(e) => {
+ 
       let x = "black"
       switch(e){
           case "critical" : x=  "brown"; break
@@ -63,8 +68,10 @@ import MyTest from '@/components/MyTest.vue'
           case "error" : x=  "red"; break
           case "warning" : x=  "yellow"; break
       }
+      
       return x
   } 
+
  
 </script>
 <style>
@@ -118,4 +125,5 @@ import MyTest from '@/components/MyTest.vue'
       display: inline-block;
        width: 50%;
  }
+
 </style>
